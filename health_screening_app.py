@@ -31,9 +31,9 @@ st.sidebar.markdown("<br>", unsafe_allow_html=True)  # Add spacing
 if right_fundus_image and left_fundus_image:
     col1, col2 = st.sidebar.columns(2)
     with col1:
-        st.image(right_fundus_image, caption="Right Fundus Image", use_column_width=True)
+        st.image(right_fundus_image, caption="Right Fundus Image", use_container_width=True)
     with col2:
-        st.image(left_fundus_image, caption="Left Fundus Image", use_column_width=True)
+        st.image(left_fundus_image, caption="Left Fundus Image", use_container_width=True)
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)  # Add spacing
 st.sidebar.write("This is a demo app, purely for demonstration purposes, not for any type of medical, clinical, or research use.")

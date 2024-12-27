@@ -112,13 +112,22 @@ if st.session_state.step == 1:
         if st.form_submit_button("Next"):
             st.session_state.step = 2
 
-# Step 2: Upload fundus images
+# Step 2: Upload fundus images and health parameters
 if st.session_state.step == 2:
     with st.form("image_upload_form"):
-        st.write("Step 2: Upload Fundus Images")
+        st.write("Step 2: Upload Fundus Images and Enter Health Parameters")
         st.session_state.right_fundus_image = st.file_uploader("Upload Right Fundus Image", type=["png", "jpg", "jpeg"], key="right_fundus_new")
         st.session_state.left_fundus_image = st.file_uploader("Upload Left Fundus Image", type=["png", "jpg", "jpeg"], key="left_fundus_new")
         
+        bmi = st.number_input("BMI (kg/m²)", min_value=0.0, max_value=100.0)
+        blood_pressure = st.number_input("Blood Pressure (mmHg)", min_value=0, max_value=300)
+        fasting_blood_sugar = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=0, max_value=500)
+        ldl_c = st.number_input("LDL-C (mg/dL)", min_value=0, max_value=300)
+        hs_crp = st.number_input("hs-CRP (mg/L)", min_value=0.0, max_value=20.0)
+        egfr = st.number_input("eGFR (mL/min/1.73m²)", min_value=0, max_value=200)
+        alt = st.number_input("ALT (U/L)", min_value=0, max_value=500)
+        ast = st.number_input("AST (U/L)", min_value=0, max_value=500)
+
         col1, col2 = st.columns([1, 1])
         with col1:
             if st.form_submit_button("Back"):
@@ -126,51 +135,48 @@ if st.session_state.step == 2:
         with col2:
             if st.form_submit_button("Generate Report"):
                 if st.session_state.right_fundus_image and st.session_state.left_fundus_image:
+                    # Save health parameters in session state
+                    st.session_state.health_params = {
+                        "Age": st.session_state.age,
+                        "Gender": st.session_state.gender,
+                        "BMI": bmi,
+                        "Smoking Status": st.session_state.smoking_status,
+                        "Alcohol Consumption": st.session_state.alcohol_status,
+                        "Blood Pressure": blood_pressure,
+                        "Fasting Blood Sugar": fasting_blood_sugar,
+                        "LDL-C": ldl_c,
+                        "hs-CRP": hs_crp,
+                        "eGFR": egfr,
+                        "ALT": alt,
+                        "AST": ast
+                    }
                     st.session_state.step = 3
                 else:
                     st.error("Please upload both fundus images before proceeding.")
 
-# Step 3: Generate and display the report
+# Step 3: Display the report
 if st.session_state.step == 3:
-    with st.form("health_parameters_form"):
+    st.write("Step 3: Report")
+    params = st.session_state.health_params
+
+    # Evaluate the conditions based on the input parameters
+    conditions, explanations = evaluate_conditions(params)
+
+    # Display the results
+    st.subheader("Diagnosis Results")
+    if conditions:
+        for condition, explanation in zip(conditions, explanations):
+            st.write(f"**{condition}**: {explanation}")
+    else:
+        st.write("No conditions diagnosed based on the provided parameters.")
+
+    # Display the normal ranges for reference
+    st.subheader("Normal Ranges for Parameters")
+    st.table(normal_ranges)
+
+    # Display the input parameters in a table
+    st.subheader("Entered Health Parameters")
+    st.table(params)
     
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            if st.form_submit_button("Back"):
-                st.session_state.step = 2
-        with col2:
-            if st.form_submit_button("Generate Report"):
-                # Create a dictionary for the input parameters
-                params = {
-                    "Age": st.session_state.age,
-                    "Gender": st.session_state.gender,
-                    "BMI": bmi,
-                    "Smoking Status": st.session_state.smoking_status,
-                    "Alcohol Consumption": st.session_state.alcohol_status,
-                    "Blood Pressure": blood_pressure,
-                    "Fasting Blood Sugar": fasting_blood_sugar,
-                    "LDL-C": ldl_c,
-                    "hs-CRP": hs_crp,
-                    "eGFR": egfr,
-                    "ALT": alt,
-                    "AST": ast
-                }
-
-                # Evaluate the conditions based on the input parameters
-                conditions, explanations = evaluate_conditions(params)
-
-                # Display the results
-                st.subheader("Diagnosis Results")
-                if conditions:
-                    for condition, explanation in zip(conditions, explanations):
-                        st.write(f"**{condition}**: {explanation}")
-                else:
-                    st.write("No conditions diagnosed based on the provided parameters.")
-
-                # Display the normal ranges for reference
-                st.subheader("Normal Ranges for Parameters")
-                st.table(normal_ranges)
-
-                # Display the input parameters in a table
-                st.subheader("Entered Health Parameters")
-                st.table(params)
+    if st.button("Back"):
+        st.session_state.step = 2

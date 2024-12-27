@@ -15,28 +15,53 @@ def load_image(image_path):
 logo_image = load_image("logo.png")
 right_fundus_image = load_image("right_fundus_example.jpg")
 left_fundus_image = load_image("left_fundus_example.jpg")
+demo_image = load_image("Demo.png")
 
-if logo_image:
-    st.sidebar.image(logo_image, use_container_width=True)
+st.sidebar.image(logo_image, use_container_width=True)
+st.sidebar.markdown("<br>", unsafe_allow_html=True)  # Add spacing
 
-if st.sidebar.button("Home"):
-    st.session_state.step = 1
+col1, col2 = st.sidebar.columns([1, 1])
+with col1:
+    home_clicked = st.button("Home", key="home")
+with col2:
+    add_record_clicked = st.button("Add New Record", key="add_record")
 
-if st.sidebar.button("Add New Record"):
-    st.session_state.step = 1
+st.sidebar.markdown("<br>", unsafe_allow_html=True)  # Add spacing
 
 if right_fundus_image and left_fundus_image:
     col1, col2 = st.sidebar.columns(2)
     with col1:
-        st.image(right_fundus_image, caption="Right Fundus Image", use_container_width=True)
+        st.image(right_fundus_image, caption="Right Fundus Image", use_column_width=True)
     with col2:
-        st.image(left_fundus_image, caption="Left Fundus Image", use_container_width=True)
+        st.image(left_fundus_image, caption="Left Fundus Image", use_column_width=True)
 
+st.sidebar.markdown("<br>", unsafe_allow_html=True)  # Add spacing
 st.sidebar.write("This is a demo app, purely for demonstration purposes, not for any type of medical, clinical, or research use.")
 
 # Initialize session state
 if 'step' not in st.session_state:
     st.session_state.step = 1
+
+# Home button functionality
+if home_clicked:
+    st.session_state.step = "home"
+
+# Add New Record button functionality
+if add_record_clicked:
+    st.session_state.step = 1
+
+# Home page content
+if st.session_state.step == "home":
+    if demo_image:
+        st.image(demo_image, caption="Demo", use_column_width=True)
+    st.write("**About Us**")
+    st.write("""
+    Prediscan - AI-based cloud medical diagnostic software utilizes simple eye scans to non-invasively detect early signs of non-communicable and chronic diseases.
+    
+    We are leveraging our AI diagnostic solutions to enhance the value of retinal scans, serving as a gateway to preventive healthcare.
+    
+    Save billions of lives by non-invasively detecting diseases at their earliest stages.
+    """)
 
 # Step 1: Collect basic details
 if st.session_state.step == 1:

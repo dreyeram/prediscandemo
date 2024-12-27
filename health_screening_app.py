@@ -1,6 +1,7 @@
 import streamlit as st
 import random
 from PIL import Image
+import pandas as pd
 
 # Function to load image with error handling
 def load_image(image_path):
@@ -72,17 +73,17 @@ if st.session_state.step == 2:
 if st.session_state.step == 3:
     st.write("Step 3: Report")
     results = [
-        ("LDL", "200", "Hyperlipidemia", "LDL levels are elevated."),
-        ("Mean Arterial Blood Pressure", "150", "Hypertension", "Mean arterial blood pressure is elevated."),
-        ("eGFR", "98", "Normal", "eGFR levels are normal."),
-        ("Fasting Glucose Level", "130", "Diabetes", "Fasting glucose level is elevated."),
-        ("C-Reactive Protein (CRP)", "4.5", "Inflammation", "Elevated CRP levels indicate inflammation."),
-        ("AST", "35", "Normal", "AST levels are within the normal range."),
-        ("ALT", "40", "Normal", "ALT levels are within the normal range.")
+        {"Parameter": "LDL", "Value": "200", "Diagnosis": "Hyperlipidemia", "Explanation": "LDL levels are elevated."},
+        {"Parameter": "Mean Arterial Blood Pressure", "Value": "150", "Diagnosis": "Hypertension", "Explanation": "Mean arterial blood pressure is elevated."},
+        {"Parameter": "eGFR", "Value": "98", "Diagnosis": "Normal", "Explanation": "eGFR levels are normal."},
+        {"Parameter": "Fasting Glucose Level", "Value": "130", "Diagnosis": "Diabetes", "Explanation": "Fasting glucose level is elevated."},
+        {"Parameter": "C-Reactive Protein (CRP)", "Value": "4.5", "Diagnosis": "Inflammation", "Explanation": "Elevated CRP levels indicate inflammation."},
+        {"Parameter": "AST", "Value": "35", "Diagnosis": "Normal", "Explanation": "AST levels are within the normal range."},
+        {"Parameter": "ALT", "Value": "40", "Diagnosis": "Normal", "Explanation": "ALT levels are within the normal range."}
     ]
 
-    for result in results:
-        st.write(f"**{result[0]}**: {result[1]} - {result[2]} - {result[3]}")
+    df_results = pd.DataFrame(results)
+    st.table(df_results)
     
     if st.button("Back"):
         st.session_state.step = 2

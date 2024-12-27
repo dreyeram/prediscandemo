@@ -133,16 +133,7 @@ if st.session_state.step == 2:
 # Step 3: Generate and display the report
 if st.session_state.step == 3:
     with st.form("health_parameters_form"):
-        st.write("Step 3: Enter Health Parameters")
-        bmi = st.number_input("BMI (kg/m²)", min_value=0.0, max_value=100.0)
-        blood_pressure = st.number_input("Blood Pressure (mmHg)", min_value=0, max_value=300)
-        fasting_blood_sugar = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=0, max_value=500)
-        ldl_c = st.number_input("LDL-C (mg/dL)", min_value=0, max_value=300)
-        hs_crp = st.number_input("hs-CRP (mg/L)", min_value=0.0, max_value=20.0)
-        egfr = st.number_input("eGFR (mL/min/1.73m²)", min_value=0, max_value=200)
-        alt = st.number_input("ALT (U/L)", min_value=0, max_value=500)
-        ast = st.number_input("AST (U/L)", min_value=0, max_value=500)
-
+    
         col1, col2 = st.columns([1, 1])
         with col1:
             if st.form_submit_button("Back"):

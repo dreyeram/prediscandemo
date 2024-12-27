@@ -65,10 +65,10 @@ def evaluate_conditions(params):
 st.set_page_config(page_title="Health Screening Tool", layout="wide")
 
 # Sidebar Layout
-st.sidebar.image("logo.png", use_column_width=True)
-st.sidebar.button("Add New Record")
-right_fundus_image = st.sidebar.file_uploader("Upload Right Fundus Image", type=["png", "jpg", "jpeg"])
-left_fundus_image = st.sidebar.file_uploader("Upload Left Fundus Image", type=["png", "jpg", "jpeg"])
+st.sidebar.image("logo.png", use_container_width=True)
+add_record_button = st.sidebar.button("Add New Record")
+right_fundus_image = st.sidebar.file_uploader("Upload Right Fundus Image", type=["png", "jpg", "jpeg"], key="right_fundus")
+left_fundus_image = st.sidebar.file_uploader("Upload Left Fundus Image", type=["png", "jpg", "jpeg"], key="left_fundus")
 st.sidebar.write("This is a demo app, purely for demonstration purposes, not for any type of medical, clinical, or research use.")
 
 # Main Layout
@@ -82,11 +82,25 @@ demo_records = [
     # Add more demo records as needed
 ]
 
-for record in demo_records:
-    st.write(f"Date: {record['date']} | Patient ID: {record['patient_id']} | Diagnosis: {record['diagnosis']} | [View Record](#)")
+# Display demo records in a table format
+import pandas as pd
+df_demo_records = pd.DataFrame(demo_records)
+st.table(df_demo_records)
+
+# View record button
+view_record_id = st.text_input("Enter Patient ID to View Record", "")
+view_record_button = st.button("View Record")
+if view_record_button and view_record_id:
+    record = next((rec for rec in demo_records if rec["patient_id"] == view_record_id), None)
+    if record:
+        st.write(f"Date: {record['date']}")
+        st.write(f"Patient ID: {record['patient_id']}")
+        st.write(f"Diagnosis: {record['diagnosis']}")
+    else:
+        st.write("Record not found.")
 
 # Add New Record Section
-if st.sidebar.button("Add New Record"):
+if add_record_button:
     with st.form("patient_form"):
         st.write("Enter Basic Details")
         patient_id = random.randint(10000, 99999)
@@ -99,48 +113,53 @@ if st.sidebar.button("Add New Record"):
         family_history = st.text_area("Family Medical History")
         
         if st.form_submit_button("Next"):
-            if right_fundus_image and left_fundus_image:
-                st.write("Image quality is high and perfect for evaluation. Click next to proceed to analysis.")
-                if st.button("Next"):
-                    # Collect input data from user
-                    bmi = st.number_input("BMI (kg/m²)", min_value=0.0, max_value=100.0)
-                    blood_pressure = st.number_input("Blood Pressure (mmHg)", min_value=0, max_value=300)
-                    fasting_blood_sugar = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=0, max_value=500)
-                    ldl_c = st.number_input("LDL-C (mg/dL)", min_value=0, max_value=300)
-                    hs_crp = st.number_input("hs-CRP (mg/L)", min_value=0.0, max_value=20.0)
-                    egfr = st.number_input("eGFR (mL/min/1.73m²)", min_value=0, max_value=200)
-                    alt = st.number_input("ALT (U/L)", min_value=0, max_value=500)
-                    ast = st.number_input("AST (U/L)", min_value=0, max_value=500)
+            with st.form("image_upload_form"):
+                st.write("Upload Fundus Images")
+                right_fundus_image = st.file_uploader("Upload Right Fundus Image", type=["png", "jpg", "jpeg"], key="right_fundus_new")
+                left_fundus_image = st.file_uploader("Upload Left Fundus Image", type=["png", "jpg", "jpeg"], key="left_fundus_new")
+                
+                if st.form_submit_button("Submit"):
+                    if right_fundus_image and left_fundus_image:
+                        st.write("Image quality is high and perfect for evaluation. Click next to proceed to analysis.")
+                        if st.button("Next"):
+                            # Collect input data from user
+                            bmi = st.number_input("BMI (kg/m²)", min_value=0.0, max_value=100.0)
+                            blood_pressure = st.number_input("Blood Pressure (mmHg)", min_value=0, max_value=300)
+                            fasting_blood_sugar = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=0, max_value=500)
+                            ldl_c = st.number_input("LDL-C (mg/dL)", min_value=0, max_value=300)
+                            hs_crp = st.number_input("hs-CRP (mg/L)", min_value=0.0, max_value=20.0)
+                            egfr = st.number_input("eGFR (mL/min/1.73m²)", min_value=0, max_value=200)
+                            alt = st.number_input("ALT (U/L)", min_value=0, max_value=500)
+                            ast = st.number_input("AST (U/L)", min_value=0, max_value=500)
 
-                    # Create a dictionary for the input parameters
-                    params = {
-                        "Age": age,
-                        "Gender": gender,
-                        "BMI": bmi,
-                        "Smoking Status": smoking_status,
-                        "Alcohol Consumption": alcohol_status,
-                        "Blood Pressure": blood_pressure,
-                        "Fasting Blood Sugar": fasting_blood_sugar,
-                        "LDL-C": ldl_c,
-                        "hs-CRP": hs_crp,
-                        "eGFR": egfr,
-                        "ALT": alt,
-                        "AST": ast
-                    }
+                            # Create a dictionary for the input parameters
+                            params = {
+                                "Age": age,
+                                "Gender": gender,
+                                "BMI": bmi,
+                                "Smoking Status": smoking_status,
+                                "Alcohol Consumption": alcohol_status,
+                                "Blood Pressure": blood_pressure,
+                                "Fasting Blood Sugar": fasting_blood_sugar,
+                                "LDL-C": ldl_c,
+                                "hs-CRP": hs_crp,
+                                "eGFR": egfr,
+                                "ALT": alt,
+                                "AST": ast
+                            }
 
-                    # Evaluate the conditions based on the input parameters
-                    conditions, explanations = evaluate_conditions(params)
+                            # Evaluate the conditions based on the input parameters
+                            conditions, explanations = evaluate_conditions(params)
 
-                    # Display the results
-                    st.subheader("Diagnosis Results")
-                    if conditions:
-                        for condition, explanation in zip(conditions, explanations):
-                            st.write(f"**{condition}**: {explanation}")
-                    else:
-                        st.write("No conditions diagnosed based on the provided parameters.")
+                            # Display the results
+                            st.subheader("Diagnosis Results")
+                            if conditions:
+                                for condition, explanation in zip(conditions, explanations):
+                                    st.write(f"**{condition}**: {explanation}")
+                            else:
+                                st.write("No conditions diagnosed based on the provided parameters.")
 
-                    # Display the normal ranges for reference
-                    st.subheader("Normal Ranges for Parameters")
-                    for param, normal_range in normal_ranges.items():
-                        st.write(f"**{param}**: {normal_range}")
-
+                            # Display the normal ranges for reference
+                            st.subheader("Normal Ranges for Parameters")
+                            for param, normal_range in normal_ranges.items():
+                                st.write(f"**{param}**: {normal_range}")

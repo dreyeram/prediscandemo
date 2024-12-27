@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+from PIL import Image
 
 # Define normal ranges for each parameter
 normal_ranges = {
@@ -63,9 +64,23 @@ def evaluate_conditions(params):
 # Streamlit interface
 st.set_page_config(page_title="Health Screening Tool", layout="wide")
 
+# Function to load image with error handling
+def load_image(image_path):
+    try:
+        return Image.open(image_path)
+    except Exception as e:
+        st.error(f"Error loading image: {e}")
+        return None
+
 # Sidebar Layout
-st.sidebar.image("right_fundus_example.jpg", caption="Right Fundus Image", use_container_width=True)
-st.sidebar.image("left_fundus_example.jpg", caption="Left Fundus Image", use_container_width=True)
+right_fundus_image = load_image("right_fundus_example.jpg")
+left_fundus_image = load_image("left_fundus_example.jpg")
+
+if right_fundus_image:
+    st.sidebar.image(right_fundus_image, caption="Right Fundus Image", use_container_width=True)
+if left_fundus_image:
+    st.sidebar.image(left_fundus_image, caption="Left Fundus Image", use_container_width=True)
+
 st.sidebar.write("This is a demo app, purely for demonstration purposes, not for any type of medical, clinical, or research use.")
 
 # Main Layout
@@ -73,6 +88,7 @@ st.title("Health Screening Tool for Heart, Kidney, and Liver Diseases")
 
 # Add New Record Section
 if st.sidebar.button("Add New Record"):
+    # Step 1: Collect basic details
     with st.form("patient_form"):
         st.write("Step 1: Enter Basic Details")
         patient_id = random.randint(10000, 99999)
@@ -85,6 +101,7 @@ if st.sidebar.button("Add New Record"):
         family_history = st.text_area("Family Medical History")
         
         if st.form_submit_button("Next"):
+            # Step 2: Upload fundus images
             with st.form("image_upload_form"):
                 st.write("Step 2: Upload Fundus Images")
                 right_fundus_image = st.file_uploader("Upload Right Fundus Image", type=["png", "jpg", "jpeg"], key="right_fundus_new")
@@ -94,7 +111,8 @@ if st.sidebar.button("Add New Record"):
                     if right_fundus_image and left_fundus_image:
                         st.write("Image quality is high and perfect for evaluation. Generating report...")
 
-                        # Collect input data from user
+                        # Step 3: Generate and display the report
+                        st.write("Step 3: Enter Health Parameters")
                         bmi = st.number_input("BMI (kg/m²)", min_value=0.0, max_value=100.0)
                         blood_pressure = st.number_input("Blood Pressure (mmHg)", min_value=0, max_value=300)
                         fasting_blood_sugar = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=0, max_value=500)

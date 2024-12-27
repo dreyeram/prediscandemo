@@ -2,68 +2,6 @@ import streamlit as st
 import random
 from PIL import Image
 
-# Define normal ranges for each parameter
-normal_ranges = {
-    "Blood Pressure": "< 120/80 mmHg",
-    "Fasting Blood Sugar": "70 - 99 mg/dL",
-    "LDL-C": "< 100 mg/dL",
-    "hs-CRP": "< 1 mg/L",
-    "eGFR": "≥ 90 mL/min/1.73m²",
-    "ALT": "7 - 56 U/L",
-    "AST": "10 - 40 U/L",
-    "BMI": "18.5 - 24.9 kg/m²",
-    "Alcohol Consumption": "≤ 2 drinks/day"
-}
-
-# Function to evaluate conditions
-def evaluate_conditions(params):
-    conditions = []
-    explanations = []
-
-    # Heart Diseases
-    if params["Blood Pressure"] > 140:
-        conditions.append("Hypertension")
-        explanations.append("High blood pressure indicates Hypertension.")
-    if params["LDL-C"] > 160:
-        conditions.append("Hyperlipidemia")
-        explanations.append("Elevated LDL-C levels indicate Hyperlipidemia.")
-    if params["LDL-C"] > 130 and params["hs-CRP"] > 3:
-        conditions.append("Coronary Artery Disease (CAD)")
-        explanations.append("High LDL-C and hs-CRP levels indicate Coronary Artery Disease (CAD).")
-    
-    # Kidney Diseases
-    if 60 <= params["eGFR"] < 90:
-        conditions.append("Mild CKD (Stage 2)")
-        explanations.append("eGFR levels indicate mild chronic kidney disease.")
-    if 30 <= params["eGFR"] < 60:
-        conditions.append("Moderate CKD (Stage 3)")
-        explanations.append("eGFR levels indicate moderate chronic kidney disease.")
-    if 15 <= params["eGFR"] < 30:
-        conditions.append("Severe CKD (Stage 4)")
-        explanations.append("eGFR levels indicate severe chronic kidney disease.")
-    if params["eGFR"] < 15:
-        conditions.append("End-Stage Renal Disease (Stage 5)")
-        explanations.append("eGFR levels indicate end-stage renal disease.")
-    if params["Fasting Blood Sugar"] > 126 and params["Blood Pressure"] > 130 and params["eGFR"] < 90:
-        conditions.append("Diabetic Nephropathy")
-        explanations.append("Elevated fasting blood sugar and reduced eGFR with high blood pressure indicate Diabetic Nephropathy.")
-    
-    # Liver Diseases
-    if params["ALT"] > 40 and params["AST"] > 40 and params["BMI"] > 30 and params["Alcohol Consumption"] <= 2:
-        conditions.append("Non-Alcoholic Fatty Liver Disease (NAFLD)")
-        explanations.append("Elevated liver enzymes, high BMI, and low alcohol consumption indicate Non-Alcoholic Fatty Liver Disease (NAFLD).")
-    if params["ALT"] > 40 and params["AST"] > 40 and params["Alcohol Consumption"] > 2:
-        conditions.append("Alcoholic Liver Disease")
-        explanations.append("Elevated liver enzymes and high alcohol consumption indicate Alcoholic Liver Disease.")
-    if params["ALT"] > 80 and params["AST"] > 80:
-        conditions.append("Liver Fibrosis")
-        explanations.append("Severely elevated liver enzymes indicate Liver Fibrosis.")
-
-    return conditions, explanations
-
-# Streamlit interface
-st.set_page_config(page_title="Health Screening Tool", layout="wide")
-
 # Function to load image with error handling
 def load_image(image_path):
     try:
@@ -112,22 +50,13 @@ if st.session_state.step == 1:
         if st.form_submit_button("Next"):
             st.session_state.step = 2
 
-# Step 2: Upload fundus images and health parameters
+# Step 2: Upload fundus images
 if st.session_state.step == 2:
     with st.form("image_upload_form"):
-        st.write("Step 2: Upload Fundus Images and Enter Health Parameters")
+        st.write("Step 2: Upload Fundus Images")
         st.session_state.right_fundus_image = st.file_uploader("Upload Right Fundus Image", type=["png", "jpg", "jpeg"], key="right_fundus_new")
         st.session_state.left_fundus_image = st.file_uploader("Upload Left Fundus Image", type=["png", "jpg", "jpeg"], key="left_fundus_new")
         
-        bmi = st.number_input("BMI (kg/m²)", min_value=0.0, max_value=100.0)
-        blood_pressure = st.number_input("Blood Pressure (mmHg)", min_value=0, max_value=300)
-        fasting_blood_sugar = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=0, max_value=500)
-        ldl_c = st.number_input("LDL-C (mg/dL)", min_value=0, max_value=300)
-        hs_crp = st.number_input("hs-CRP (mg/L)", min_value=0.0, max_value=20.0)
-        egfr = st.number_input("eGFR (mL/min/1.73m²)", min_value=0, max_value=200)
-        alt = st.number_input("ALT (U/L)", min_value=0, max_value=500)
-        ast = st.number_input("AST (U/L)", min_value=0, max_value=500)
-
         col1, col2 = st.columns([1, 1])
         with col1:
             if st.form_submit_button("Back"):
@@ -135,21 +64,6 @@ if st.session_state.step == 2:
         with col2:
             if st.form_submit_button("Generate Report"):
                 if st.session_state.right_fundus_image and st.session_state.left_fundus_image:
-                    # Save health parameters in session state
-                    st.session_state.health_params = {
-                        "Age": st.session_state.age,
-                        "Gender": st.session_state.gender,
-                        "BMI": bmi,
-                        "Smoking Status": st.session_state.smoking_status,
-                        "Alcohol Consumption": st.session_state.alcohol_status,
-                        "Blood Pressure": blood_pressure,
-                        "Fasting Blood Sugar": fasting_blood_sugar,
-                        "LDL-C": ldl_c,
-                        "hs-CRP": hs_crp,
-                        "eGFR": egfr,
-                        "ALT": alt,
-                        "AST": ast
-                    }
                     st.session_state.step = 3
                 else:
                     st.error("Please upload both fundus images before proceeding.")
@@ -157,26 +71,34 @@ if st.session_state.step == 2:
 # Step 3: Display the report
 if st.session_state.step == 3:
     st.write("Step 3: Report")
-    params = st.session_state.health_params
+    patient_details = {
+        "Patient ID": st.session_state.patient_id,
+        "Patient Name": st.session_state.patient_name,
+        "Age": st.session_state.age,
+        "Gender": st.session_state.gender,
+        "Alcoholic Status": st.session_state.alcohol_status,
+        "Smoking Status": st.session_state.smoking_status,
+        "Medical History": st.session_state.medical_history,
+        "Family Medical History": st.session_state.family_history
+    }
 
-    # Evaluate the conditions based on the input parameters
-    conditions, explanations = evaluate_conditions(params)
+    # Display the entered patient details in a table
+    st.subheader("Entered Patient Details")
+    st.table(patient_details)
+
+    # Assuming the diagnosis and explanations are based on the uploaded fundus images
+    # This is a placeholder for where you would process the images to generate the report
+    # For the demo, we use dummy data
+    conditions = ["Condition A", "Condition B"]
+    explanations = ["Explanation for Condition A", "Explanation for Condition B"]
 
     # Display the results
     st.subheader("Diagnosis Results")
-    if conditions:
-        for condition, explanation in zip(conditions, explanations):
-            st.write(f"**{condition}**: {explanation}")
-    else:
-        st.write("No conditions diagnosed based on the provided parameters.")
+    results_table = {
+        "Condition": conditions,
+        "Explanation": explanations
+    }
+    st.table(results_table)
 
-    # Display the normal ranges for reference
-    st.subheader("Normal Ranges for Parameters")
-    st.table(normal_ranges)
-
-    # Display the input parameters in a table
-    st.subheader("Entered Health Parameters")
-    st.table(params)
-    
     if st.button("Back"):
         st.session_state.step = 2

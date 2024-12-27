@@ -89,16 +89,50 @@ if st.session_state.step == 3:
     # Assuming the diagnosis and explanations are based on the uploaded fundus images
     # This is a placeholder for where you would process the images to generate the report
     # For the demo, we use dummy data
-    conditions = ["Condition A", "Condition B"]
-    explanations = ["Explanation for Condition A", "Explanation for Condition B"]
+ if st.form_submit_button("Generate Report"):
+                if st.session_state.right_fundus_image and st.session_state.left_fundus_image:
+                    # Save health parameters in session state
+                    st.session_state.health_params = {
+                        "Age": st.session_state.age,
+                        "Gender": st.session_state.gender,
+                        "BMI": bmi,
+                        "Smoking Status": st.session_state.smoking_status,
+                        "Alcohol Consumption": st.session_state.alcohol_status,
+                        "Blood Pressure": blood_pressure,
+                        "Fasting Blood Sugar": fasting_blood_sugar,
+                        "LDL-C": ldl_c,
+                        "hs-CRP": hs_crp,
+                        "eGFR": egfr,
+                        "ALT": alt,
+                        "AST": ast
+                    }
+                    st.session_state.step = 3
+                else:
+                    st.error("Please upload both fundus images before proceeding.")
+
+# Step 3: Display the report
+if st.session_state.step == 3:
+    st.write("Step 3: Report")
+    params = st.session_state.health_params
+
+    # Evaluate the conditions based on the input parameters
+    conditions, explanations = evaluate_conditions(params)
 
     # Display the results
     st.subheader("Diagnosis Results")
-    results_table = {
-        "Condition": conditions,
-        "Explanation": explanations
-    }
-    st.table(results_table)
+    if conditions:
+        for condition, explanation in zip(conditions, explanations):
+            st.write(f"**{condition}**: {explanation}")
+    else:
+        st.write("No conditions diagnosed based on the provided parameters.")
 
+    # Display the normal ranges for reference
+    st.subheader("Normal Ranges for Parameters")
+    st.table(normal_ranges)
+
+    # Display the input parameters in a table
+    st.subheader("Entered Health Parameters")
+    st.table(params)
+    
     if st.button("Back"):
         st.session_state.step = 2

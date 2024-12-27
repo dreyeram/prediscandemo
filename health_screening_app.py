@@ -71,67 +71,18 @@ if st.session_state.step == 2:
 # Step 3: Display the report
 if st.session_state.step == 3:
     st.write("Step 3: Report")
-    patient_details = {
-        "Patient ID": st.session_state.patient_id,
-        "Patient Name": st.session_state.patient_name,
-        "Age": st.session_state.age,
-        "Gender": st.session_state.gender,
-        "Alcoholic Status": st.session_state.alcohol_status,
-        "Smoking Status": st.session_state.smoking_status,
-        "Medical History": st.session_state.medical_history,
-        "Family Medical History": st.session_state.family_history
-    }
+    results = [
+        ("LDL", "200", "Hyperlipidemia", "LDL levels are elevated."),
+        ("Mean Arterial Blood Pressure", "150", "Hypertension", "Mean arterial blood pressure is elevated."),
+        ("eGFR", "98", "Normal", "eGFR levels are normal."),
+        ("Fasting Glucose Level", "130", "Diabetes", "Fasting glucose level is elevated."),
+        ("C-Reactive Protein (CRP)", "4.5", "Inflammation", "Elevated CRP levels indicate inflammation."),
+        ("AST", "35", "Normal", "AST levels are within the normal range."),
+        ("ALT", "40", "Normal", "ALT levels are within the normal range.")
+    ]
 
-    # Display the entered patient details in a table
-    st.subheader("Entered Patient Details")
-    st.table(patient_details)
-
-    # Placeholder for health parameters and evaluation
-    st.session_state.health_params = {
-        "Age": st.session_state.age,
-        "Gender": st.session_state.gender,
-        "BMI": 25,  # Placeholder value
-        "Smoking Status": st.session_state.smoking_status,
-        "Alcohol Consumption": st.session_state.alcohol_status,
-        "Blood Pressure": 120,  # Placeholder value
-        "Fasting Blood Sugar": 90,  # Placeholder value
-        "LDL-C": 100,  # Placeholder value
-        "hs-CRP": 1,  # Placeholder value
-        "eGFR": 90,  # Placeholder value
-        "ALT": 30,  # Placeholder value
-        "AST": 20  # Placeholder value
-    }
-    params = st.session_state.health_params
-
-    # Placeholder function for condition evaluation
-    def evaluate_conditions(params):
-        # Dummy evaluation logic
-        conditions = ["Condition A", "Condition B"]
-        explanations = ["Explanation for Condition A", "Explanation for Condition B"]
-        return conditions, explanations
-
-    # Evaluate the conditions based on the input parameters
-    conditions, explanations = evaluate_conditions(params)
-
-    # Display the results
-    st.subheader("Diagnosis Results")
-    if conditions:
-        for condition, explanation in zip(conditions, explanations):
-            st.write(f"**{condition}**: {explanation}")
-    else:
-        st.write("No conditions diagnosed based on the provided parameters.")
-
-    # Display the normal ranges for reference
-    normal_ranges = {
-        "Parameter": ["Age", "BMI", "Blood Pressure", "Fasting Blood Sugar", "LDL-C", "hs-CRP", "eGFR", "ALT", "AST"],
-        "Normal Range": ["0-120", "18.5-24.9", "90-120", "70-99", "0-100", "0-3", ">90", "0-40", "0-40"]
-    }
-    st.subheader("Normal Ranges for Parameters")
-    st.table(normal_ranges)
-
-    # Display the input parameters in a table
-    st.subheader("Entered Health Parameters")
-    st.table(params)
+    for result in results:
+        st.write(f"**{result[0]}**: {result[1]} - {result[2]} - {result[3]}")
     
     if st.button("Back"):
         st.session_state.step = 2

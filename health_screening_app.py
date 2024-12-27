@@ -18,19 +18,24 @@ left_fundus_image = load_image("left_fundus_example.jpg")
 
 if logo_image:
     st.sidebar.image(logo_image, use_container_width=True)
-if right_fundus_image:
-    st.sidebar.image(right_fundus_image, caption="Right Fundus Image", width=150)
-if left_fundus_image:
-    st.sidebar.image(left_fundus_image, caption="Left Fundus Image", width=150)
+
+if st.sidebar.button("Home"):
+    st.session_state.step = 1
+
+if st.sidebar.button("Add New Record"):
+    st.session_state.step = 1
+
+if right_fundus_image and left_fundus_image:
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        st.image(right_fundus_image, caption="Right Fundus Image", use_column_width=True)
+    with col2:
+        st.image(left_fundus_image, caption="Left Fundus Image", use_column_width=True)
 
 st.sidebar.write("This is a demo app, purely for demonstration purposes, not for any type of medical, clinical, or research use.")
 
 # Initialize session state
 if 'step' not in st.session_state:
-    st.session_state.step = 1
-
-# Add New Record Section
-if st.sidebar.button("Add New Record"):
     st.session_state.step = 1
 
 # Step 1: Collect basic details

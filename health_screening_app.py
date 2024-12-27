@@ -86,34 +86,29 @@ if st.session_state.step == 3:
     st.subheader("Entered Patient Details")
     st.table(patient_details)
 
-    # Assuming the diagnosis and explanations are based on the uploaded fundus images
-    # This is a placeholder for where you would process the images to generate the report
-    # For the demo, we use dummy data
- if st.form_submit_button("Generate Report"):
-                if st.session_state.right_fundus_image and st.session_state.left_fundus_image:
-                    # Save health parameters in session state
-                    st.session_state.health_params = {
-                        "Age": st.session_state.age,
-                        "Gender": st.session_state.gender,
-                        "BMI": bmi,
-                        "Smoking Status": st.session_state.smoking_status,
-                        "Alcohol Consumption": st.session_state.alcohol_status,
-                        "Blood Pressure": blood_pressure,
-                        "Fasting Blood Sugar": fasting_blood_sugar,
-                        "LDL-C": ldl_c,
-                        "hs-CRP": hs_crp,
-                        "eGFR": egfr,
-                        "ALT": alt,
-                        "AST": ast
-                    }
-                    st.session_state.step = 3
-                else:
-                    st.error("Please upload both fundus images before proceeding.")
-
-# Step 3: Display the report
-if st.session_state.step == 3:
-    st.write("Step 3: Report")
+    # Placeholder for health parameters and evaluation
+    st.session_state.health_params = {
+        "Age": st.session_state.age,
+        "Gender": st.session_state.gender,
+        "BMI": 25,  # Placeholder value
+        "Smoking Status": st.session_state.smoking_status,
+        "Alcohol Consumption": st.session_state.alcohol_status,
+        "Blood Pressure": 120,  # Placeholder value
+        "Fasting Blood Sugar": 90,  # Placeholder value
+        "LDL-C": 100,  # Placeholder value
+        "hs-CRP": 1,  # Placeholder value
+        "eGFR": 90,  # Placeholder value
+        "ALT": 30,  # Placeholder value
+        "AST": 20  # Placeholder value
+    }
     params = st.session_state.health_params
+
+    # Placeholder function for condition evaluation
+    def evaluate_conditions(params):
+        # Dummy evaluation logic
+        conditions = ["Condition A", "Condition B"]
+        explanations = ["Explanation for Condition A", "Explanation for Condition B"]
+        return conditions, explanations
 
     # Evaluate the conditions based on the input parameters
     conditions, explanations = evaluate_conditions(params)
@@ -127,6 +122,10 @@ if st.session_state.step == 3:
         st.write("No conditions diagnosed based on the provided parameters.")
 
     # Display the normal ranges for reference
+    normal_ranges = {
+        "Parameter": ["Age", "BMI", "Blood Pressure", "Fasting Blood Sugar", "LDL-C", "hs-CRP", "eGFR", "ALT", "AST"],
+        "Normal Range": ["0-120", "18.5-24.9", "90-120", "70-99", "0-100", "0-3", ">90", "0-40", "0-40"]
+    }
     st.subheader("Normal Ranges for Parameters")
     st.table(normal_ranges)
 

@@ -52,8 +52,7 @@ if add_record_clicked:
 
 # Home page content
 if st.session_state.step == "home":
-    if demo_image:
-        st.image(demo_image, caption="Demo", use_column_width=True)
+    
     st.write("**About Us**")
     st.write("""
     Prediscan - AI-based cloud medical diagnostic software utilizes simple eye scans to non-invasively detect early signs of non-communicable and chronic diseases.
@@ -62,6 +61,8 @@ if st.session_state.step == "home":
     
     Save billions of lives by non-invasively detecting diseases at their earliest stages.
     """)
+    if demo_image:
+        st.image(demo_image, caption="Demo", use_container_width=True)
 
 # Step 1: Collect basic details
 if st.session_state.step == 1:
